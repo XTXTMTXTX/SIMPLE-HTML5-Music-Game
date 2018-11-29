@@ -11,7 +11,7 @@ Keys: D F J K
 
 \[Esc\]For Pause
 
-[Play it here](https://www.XTXTMTXTX.xyz/SIMPLE_MUG) or [ here](http://php.XTXTMTXTX.xyz/SIMPLE_MUG)  
+[Play it here](https://www.XTXTMTXTX.xyz/SIMPLE_MUG) or [here](http://php.XTXTMTXTX.xyz/SIMPLE_MUG)  
 
 Keyboard: Yes
 
