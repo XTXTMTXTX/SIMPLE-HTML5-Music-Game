@@ -17,6 +17,6 @@ Keyboard: Yes
 
 Android Touch(Chrome): Yes
 
-iOs: Cannot play audio
+iOS: Cannot play audio
 
 Use Chrome for better performance, firfox will cause lag
