@@ -251,6 +251,7 @@ function HitEvent(Key, number, early) {
     JudgeNew=time+JudgeTime;
 }
 function processTouchstart(e) {
+	e.preventDefault();
     let ID=e.changedTouches[0].identifier;
     let X=e.changedTouches[0].clientX-c.offsetLeft;
     let Key=0,Finded=false;
@@ -322,6 +323,7 @@ function processTouchstart(e) {
     }
 }
 function processTouchend(e){
+	e.preventDefault();
     let ID=e.changedTouches[0].identifier;
     let Key=0,Finded=false;
     for(let i=0;i<4;i++) {

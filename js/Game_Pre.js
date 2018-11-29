@@ -28,6 +28,7 @@ let LN=0;
 let Score=0,EndScore=0;
 let Combo=0;
 let LineHold=[-1,-1,-1,-1];
+let TouchHold=[-1,-1,-1,-1];
 let LaserTime=150;
 let offset=-40;
 let Scale=100;
@@ -250,6 +251,7 @@ function HitEvent(Key, number, early) {
     JudgeNew=time+JudgeTime;
 }
 function processTouchstart(e) {
+	e.preventDefault();
     let ID=e.changedTouches[0].identifier;
     let X=e.changedTouches[0].clientX-c.offsetLeft;
     let Key=0,Finded=false;
@@ -321,6 +323,7 @@ function processTouchstart(e) {
     }
 }
 function processTouchend(e){
+	e.preventDefault();
     let ID=e.changedTouches[0].identifier;
     let Key=0,Finded=false;
     for(let i=0;i<4;i++) {
