@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+    <title>MUG</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0,user-scalable=no">
+</head>
+<body bgcolor="black" style="overflow:hidden;">
+<style>
+    span{
+        color: #FFFFFF
+    }
+</style>
+<section>
+    <span id="filename" style="display: none;">Songs/NANO DEATH/LeaF - NANO DEATH!!!!! (nowsmart) [Expert].txt</span>
+    <div style="text-align: center; position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0; height: 0px;">
+        <audio id="audioPlayer" src="Songs/NANO DEATH/audio.mp3"></audio>
+    </div>
+    <div id="osudiv" style="text-align: center; position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0; height: 0px;">
+        <span>加载谱面文件</span>
+        <input type="file" id="uploadOsu" onchange="readOsu()" style="color: #FFFFFF">
+    </div>
+    <div id="audiodiv" style="display: none;">
+        <span>加载音频文件</span>
+        <input type="file" id="uploadAudio" onchange="readAudio()" style="color: #FFFFFF">
+    </div>
+    <div id="startdiv" style="display: none;">
+        <input type="submit" name="b1" value="开始" onClick="bt_start_onclick()">
+        <span>输入下落滚动时间(ms):</span>
+        <input type="text" id="scrollDurationInput" value="450" style="text-align: center;">
+        <span>输入匹配BPM(默认MAX-FIX):</span>
+        <input type="text" id="baseBPM" value="" style="text-align: center;">
+        <span>音乐偏移(负提前，正延后):</span>
+        <input type="text" id="inputOffset" value="-40" style="text-align: center;">
+    </div>
+    <div id="canvasdiv" style="display: none;"><canvas id="myCanvas" width="600" height="800" style="border:4px solid #7f7f7f; background: black;">
+        您的浏览器不支持 HTML5 canvas 标签。
+    </canvas>
+    </div>
+</section>
+<script src="js/Game_Pre.js"></script>
+</body>
+</html>
