@@ -27,13 +27,15 @@
         <input type="file" id="uploadAudio" onchange="readAudio()" style="color: #FFFFFF">
     </div>
     <div id="startdiv" style="display: none;">
-        <input type="submit" name="b1" value="开始" onClick="bt_start_onclick()">
+        <span>页面缩放(百分比)</span>
+        <input type="text" id="inputScale" value="100" style="text-align: center;"><br>
+        <input type="submit" name="b1" value="开始" onClick="bt_start_onclick()"><br>
         <span>输入下落滚动时间(ms):</span>
-        <input type="text" id="scrollDurationInput" value="450" style="text-align: center;">
+        <input type="text" id="scrollDurationInput" value="450" style="text-align: center;"><br>
         <span>输入匹配BPM(默认MAX-FIX):</span>
-        <input type="text" id="baseBPM" value="" style="text-align: center;">
+        <input type="text" id="baseBPM" value="" style="text-align: center;"><br>
         <span>音乐偏移(负提前，正延后):</span>
-        <input type="text" id="inputOffset" value="-40" style="text-align: center;">
+        <input type="text" id="inputOffset" value="-40" style="text-align: center;"><br>
     </div>
     <div id="canvasdiv" style="display: none;"><canvas id="myCanvas" width="600" height="800" style="border:4px solid #7f7f7f; background: black;">
         您的浏览器不支持 HTML5 canvas 标签。

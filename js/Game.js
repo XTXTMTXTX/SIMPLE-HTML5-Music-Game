@@ -28,8 +28,10 @@ let LN=0;
 let Score=0,EndScore=0;
 let Combo=0;
 let LineHold=[-1,-1,-1,-1];
+let TouchHold=[-1,-1,-1,-1];
 let LaserTime=150;
 let offset=-40;
+let Scale=100;
 let Result=[0,0,0,0,0,0,0];
 let FastCount=0,SlowCount=0,MaxCombo=0;
 const bindKey=[68,70,74,75];
@@ -175,10 +177,14 @@ function readAudio() {
 function initKeyListener() {
     window.addEventListener("keydown",processKeydown, true);
     window.addEventListener("keyup", processKeyup, true);
+    c.addEventListener('touchstart', processTouchstart, true);
+    c.addEventListener('touchend', processTouchend, true);
 }
 function removeKeyListener() {
     window.removeEventListener("keydown",processKeydown, true);
     window.removeEventListener("keyup", processKeyup, true);
+    c.removeEventListener('touchstart', processTouchstart, true);
+    c.removeEventListener('touchend', processTouchend, true);
 }
 function calcPOS(tt) {
     let p1=p;
@@ -213,7 +219,9 @@ function calcPOS(tt) {
 }
 function bt_start_onclick() {
     document.getElementById("startdiv").setAttribute("style","display: none;");
-    document.getElementById("canvasdiv").setAttribute("style","width: 600px; margin:0 auto;");
+    Scale=Number(document.getElementById("inputScale").value);
+    document.getElementById("canvasdiv").setAttribute("style","width: "+String(600*Scale/100)+"px; margin:0 auto;");
+    c.setAttribute("style","border:4px solid #7f7f7f; background: black; "+"width: "+String(600*Scale/100)+"px;");
     scrollDuration=Number(document.getElementById("scrollDurationInput").value);
     offset=Number(document.getElementById("inputOffset").value);
     if(document.getElementById("baseBPM").value!=="")baseMpB=60000/Number(document.getElementById("baseBPM").value);else{
@@ -241,6 +249,127 @@ function HitEvent(Key, number, early) {
         if(early)FastCount++;else SlowCount++;
     Result[number]++;
     JudgeNew=time+JudgeTime;
+}
+function processTouchstart(e) {
+    let ID=e.changedTouches[0].identifier;
+    let X=e.changedTouches[0].clientX-c.offsetLeft;
+    let Key=0,Finded=false;
+    if(X<=150*Scale/100)Key=0;else if(X<=300*Scale/100)Key=1;else if(X<=450*Scale/100)Key=2;else Key=3;
+    if (!keyAsync[Key]) {
+        keyAsync[Key] = true;
+        keyLaserTime[Key] = -1;
+        TouchHold[Key]=ID;
+        Finded=true;
+    }
+    if(time<0)return;
+    if(!Finded)return;
+    if(null != audio1&&!audio1.ended&&!audio1.paused) {
+        LineHold[Key]=-1;
+        let i=LineQueueHead[Key];
+        while(i<LineQueueTail[Key]&&!Objs[LineQueue[Key][i]]["Available"])i++;
+        if (i >= LineQueueTail[Key]) return;
+        let st = Objs[LineQueue[Key][i]]["StartTime"],
+            et = Objs[LineQueue[Key][i]]["EndTime"];
+        if (time + timing[5] < st) return;
+
+        if (et === 0) {
+            if (st < time - timing[5]) {
+                MissEvent(time<st);
+                LineQueueHead[Key]=i+1;
+                return;
+            }
+            if (time - timing[0] <= st && st <= time + timing[0]) {
+                HitEvent(Key, 0);
+                LineQueueHead[Key]=i+1;
+            } else if (time - timing[1] <= st && st <= time + timing[1]) {
+                HitEvent(Key, 1, time<st);
+                LineQueueHead[Key]=i+1;
+            } else if (time - timing[2] <= st && st <= time + timing[2]) {
+                HitEvent(Key, 2, time<st);
+                LineQueueHead[Key]=i+1;
+            } else if (time - timing[3] <= st && st <= time + timing[3]) {
+                HitEvent(Key, 3, time<st);
+                LineQueueHead[Key]=i+1;
+            } else if (time - timing[4] <= st && st <= time + timing[4]) {
+                HitEvent(Key, 4, time<st);
+                LineQueueHead[Key]=i+1;
+            } else {
+                HitEvent(Key, 5, time<st);
+                LineQueueHead[Key]=i+1;
+            }
+        } else if(Objs[LineQueue[Key][i]]["Available"]){
+            if (st < time - timing[5]) {
+                MissEvent(time<st);
+                LineHold[Key]=-1;
+                Objs[LineQueue[Key][i]]["Available"] = false;
+                return;
+            }
+            LineHold[Key]=LineQueue[Key][i];
+            if (time - timing[0] <= st && st <= time + timing[0]) {
+                HitEvent(Key, 0, time<st);
+            } else if (time - timing[1] <= st && st <= time + timing[1]) {
+                HitEvent(Key, 1, time<st);
+            } else if (time - timing[2] <= st && st <= time + timing[2]) {
+                HitEvent(Key, 2, time<st);
+            } else if (time - timing[3] <= st && st <= time + timing[3]) {
+                HitEvent(Key, 3, time<st);
+            } else if (time - timing[4] <= st && st <= time + timing[4]) {
+                HitEvent(Key, 4, time<st);
+            } else {
+                HitEvent(Key, 5, time<st);
+            }
+        }
+    }
+}
+function processTouchend(e){
+    let ID=e.changedTouches[0].identifier;
+    let Key=0,Finded=false;
+    for(let i=0;i<4;i++) {
+        if (TouchHold[i] === ID && keyAsync[i]) {
+            keyAsync[i] = false;
+            keyLaserTime[i] = LaserTime+time;
+            Finded=true;
+            Key=i;
+            break;
+        }
+    }
+    if(time<0)return;
+    if(!Finded)return;
+    if(null != audio1&&!audio1.ended&&!audio1.paused) {
+        let i=LineQueueHead[Key];
+        while(i<LineQueueTail[Key]&&!Objs[LineQueue[Key][i]]["Available"])i++;
+        if (i >= LineQueueTail[Key]) return;
+        if (LineHold[Key] === -1) return;
+        if (LineQueue[Key][i] !== LineHold[Key]) {
+            LineHold[Key] = -1;
+            return;
+        }
+        let et = Objs[LineQueue[Key][i]]["EndTime"];
+        LineHold[Key] = -1;
+        Objs[LineQueue[Key][i]]["Available"] = false;
+        if (time + timing[5] < et) {
+            MissEvent(time<et);
+
+            return;
+        }else if (time >= et) {
+            HitEvent(Key, 0, time<et);
+            return;
+        }
+        if (time - timing[0] <= et && et <= time + timing[0]) {
+            HitEvent(Key, 0, time<et);
+        } else if (time - timing[1] <= et && et <= time + timing[1]) {
+            HitEvent(Key, 1, time<et);
+        } else if (time - timing[2] <= et && et <= time + timing[2]) {
+            HitEvent(Key, 2, time<et);
+        } else if (time - timing[3] <= et && et <= time + timing[3]) {
+            HitEvent(Key, 3, time<et);
+        } else if (time - timing[4] <= et && et <= time + timing[4]) {
+            HitEvent(Key, 4, time<et);
+        } else {
+            HitEvent(Key, 5, time<et);
+        }
+
+    }
 }
 function processKeydown(e) {
     let keys = e.keyCode,Key=0,Finded=false;
@@ -332,6 +461,7 @@ function processKeyup(e){
     }
     if(time<0)return;
     if(!Finded)return;
+    TouchHold[Key]=-1;
     if(null != audio1&&!audio1.ended&&!audio1.paused) {
         let i=LineQueueHead[Key];
         while(i<LineQueueTail[Key]&&!Objs[LineQueue[Key][i]]["Available"])i++;
